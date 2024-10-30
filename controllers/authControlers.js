@@ -11,7 +11,7 @@ const signUp = async (req, res) => {
 
     //?if exists send bad requests
     if (user) {
-      return res.send({
+      return res.status(400).send({
         status: "fail",
         message: `user already exists with ${req.body.email}`,
       });
@@ -27,12 +27,12 @@ const signUp = async (req, res) => {
 
     await newUser.save();
 
-    return res.send({
+    return res.status(201).send({
       status: "success",
       message: "user created successfully",
     });
   } catch (error) {
-    res.send({
+    res.status(400).send({
       status: "failed",
       message: error.message,
     });
@@ -42,23 +42,28 @@ const signUp = async (req, res) => {
 
 const logIn = async (req,res)=>{
     try {
+
+      
         const {email,password} = req.body;
+
 
        
         if(!(email && password)){
             throw new Error("email and password required for login");
         }
         
-        const user = await userModel.findOne({email});
+        const user = await userModel.findOne({email}).select("+password");
 
         if(!user){
-            return res.send({
+            return res.status(400).send({
                 status:"failed",
                 message:"user does't exists"
             })
         }
        
         const isPasswordValid = await bcrypt.compare(password ,user.password);
+
+        // console.log(isPasswordValid);
 
         if(!isPasswordValid){
             return res.send({
@@ -82,7 +87,7 @@ const logIn = async (req,res)=>{
 
 
     } catch (error) {
-        res.send({
+        res.status(400).send({
             status:"failed",
             message:error.message
         })

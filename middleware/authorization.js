@@ -12,7 +12,7 @@ const auth = (req,res,next)=>{
         next();
 
     }catch(error){
-        res.send({
+        res.status(401).send({
             status:"fail",
             message : error.message
         })

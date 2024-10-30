@@ -13,7 +13,7 @@ const userDetails = async (req,res) =>{
           })
         
     } catch (error) {
-        res.send({
+        res.status(400).send({
             status:"failed",
             message : error.message
         })
@@ -22,4 +22,26 @@ const userDetails = async (req,res) =>{
 }
 
 
-export {userDetails};
+const getAllUser = async  (req,res)=>{
+    try {
+        const users = await userModel.find({
+        _id:{
+            $ne : req.body.userID
+        }
+        }).select("-__v");
+
+        res.send({
+            status:"success",
+            message:"users featched successfully",
+            data : users
+        })
+    } catch (error) {
+       res.status(400).send({
+        status:"failed",
+        message:"failed to fetch users"
+       }) 
+    }
+}
+
+
+export {userDetails,getAllUser};

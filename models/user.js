@@ -17,7 +17,9 @@ const user = new mongoose.Schema({
     },
     password : {
         type : String,
-        required : [true , "password is required"]
+        required : [true , "password is required"],
+        select:false,
+        minlength:8
     },
     profile : {
         type : String
