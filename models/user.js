@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-
 const user = new mongoose.Schema({
     firstname : {
         type : String,
@@ -22,7 +21,8 @@ const user = new mongoose.Schema({
         minlength:8
     },
     profile : {
-        type : String
+        type : String,
+        default:null
     }
 },{timestamps : true});
 

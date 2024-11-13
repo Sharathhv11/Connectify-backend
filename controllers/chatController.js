@@ -2,35 +2,43 @@ import chatModel from "../models/chat.js";
 
 
 const newChat = async (req,res) => {
-    
     try {
-        const {members} = req.body;
-        const isConnectionExists = await chatModel.findOne({
-            members
-        });
-
-        let newChat = undefined;
-
-        if(!isConnectionExists){
-
-            const chat = new chatModel(req.body);
+        let { members } = req.body;
     
-            newChat = await chat.save();
+        // Sort member IDs to ensure consistent ordering
+        const sortedMembers = [...members].sort();
+    
+        // Create a unique identifier by joining the sorted member IDs
+        const chatIdentifier = sortedMembers.join('_');
+    
+        // Check if a chat with this identifier already exists
+        const existingChat = await chatModel.findOne({ chatIdentifier });
+    
+        if (existingChat) {
+            return res.status(200).send({
+                status: "success",
+                message: "Chat already exists",
+                data: existingChat
+            });
         }
-
-
+    
+        // Create a new chat with the identifier
+        const newChat = await chatModel.create({ members: sortedMembers, chatIdentifier });
+    
         res.status(201).send({
-            status : "success",
-            message : "chat created successfully",
-            data : !newChat?newChat:isConnectionExists
-        })
-        
+            status: "success",
+            message: "Chat created successfully",
+            data: newChat
+        });
+    
     } catch (error) {
         res.status(400).send({
-            status : "failed",
-            message : error.message
-        })
+            status: "failed",
+            message: error.message
+        });
     }
+    
+    
 }
 
 
