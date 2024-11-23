@@ -4,6 +4,8 @@ const newChat = async (req, res) => {
   try {
     let { members } = req.body;
 
+
+
     // Sort member IDs to ensure consistent ordering
     const sortedMembers = [...members].sort();
 
@@ -55,7 +57,9 @@ const getAllChat = async (req, res) => {
           $in: req.body.userID,
         },
       })
-      .populate("members");
+      .populate("members").populate("latestMessage");
+
+
 
     res.status(200).send({
       status: "success",

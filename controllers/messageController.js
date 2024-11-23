@@ -8,7 +8,6 @@ const newMessage = async (req,res)=>{
 
         const savedMessage = await newMessage.save();
 
-        console.log(savedMessage);
 
         await chatModel.findByIdAndUpdate({
             _id : req.body.chatID
@@ -38,7 +37,6 @@ const newMessage = async (req,res)=>{
 
 const getAllMessage = async (req,res) => {
     try {
-        console.log(req.params.chatID);
        const messages = await messageModel.find({
         chatID : req.params.chatID
        });
