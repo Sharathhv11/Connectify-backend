@@ -1,4 +1,5 @@
 import chatModel from "../models/chat.js";
+import messageModel  from "../models/message.js";
 
 const newChat = async (req, res) => {
   try {
@@ -57,7 +58,9 @@ const getAllChat = async (req, res) => {
           $in: req.body.userID,
         },
       })
-      .populate("members").populate("latestMessage");
+      .populate("members").populate("latestMessage").sort({
+        updatedAt : 1
+      });
 
 
 
@@ -74,4 +77,44 @@ const getAllChat = async (req, res) => {
   }
 };
 
-export { newChat, getAllChat };
+
+const clearUnReadCount = async (req,res) => {
+  try {
+
+    const {chatID}  = req.body;
+
+    const chat = await chatModel.findByIdAndUpdate(chatID,{
+      unReadMessages : 0
+    },{
+      new : true
+    })
+
+
+    const message = await messageModel.updateMany({
+      chatID
+    },{
+      read:true
+    },{
+      new:true
+    })
+
+      
+    const result = await chatModel.find({
+      _id : chatID
+    }).populate("members").populate("latestMessage");
+    
+
+    res.status(200).send({
+      status : "success",
+      message : "updated successfully",
+      data : result
+    })
+    
+  } catch (error) {
+    res.status(400).send({
+      status : "failed",
+      message : error.message
+    })
+  }
+}
+export { newChat, getAllChat,clearUnReadCount };
